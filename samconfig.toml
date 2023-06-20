@@ -13,28 +13,10 @@ parallel = true
 [default.validate.parameters]
 lint = true
 
-[qa.deploy.parameters]
+[default.deploy.parameters]
 capabilities = "CAPABILITY_IAM"
-STACK_NAME = "sam-test"
-REGION = 'us-east-1'
-parameter_overrides = "Environment=qa"
 
-[prod.deploy.parameters]
-capabilities = "CAPABILITY_IAM"
-STACK_NAME = 'sam-app'
-REGION = 'us-east-2'
-parameter_overrides = "Environment=prod"
-
-
-[qa.package.parameters]
-STACK_NAME = "sam-test"
-REGION = 'us-east-1'
-parameter_overrides = "Environment=qa"
-
-[prod.package.parameters]
-STACK_NAME = 'sam-app'
-REGION = 'us-east-2'
-parameter_overrides = "Environment=prod"
+[default.package.parameters]
 
 [default.sync.parameters]
 watch = true
