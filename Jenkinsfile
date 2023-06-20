@@ -72,18 +72,18 @@ pipeline {
 
       steps {
         sh 'venv/bin/sam build --template ${SAM_TEMPLATE} --use-container'
-        withAWS(
-            credentials: env.PIPELINE_USER_CREDENTIAL_ID,
-            region: env.TESTING_REGION,
-            role: env.TESTING_PIPELINE_EXECUTION_ROLE,
-            roleSessionName: 'testing-packaging') {
-          sh '''
-            venv/bin/sam package \
-              --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
-              --region ${TESTING_REGION} \
-              --output-template-file packaged-testing.yaml
-          '''
-        }
+       // withAWS(
+       //     credentials: env.PIPELINE_USER_CREDENTIAL_ID,
+    //        region: env.TESTING_REGION,
+      //      role: env.TESTING_PIPELINE_EXECUTION_ROLE,
+     //       roleSessionName: 'testing-packaging') {
+      //    sh '''
+     //       venv/bin/sam package \
+       //       --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
+     //         --region ${TESTING_REGION} \
+       //       --output-template-file packaged-testing.yaml
+       //   '''
+    //    }
 
     //    withAWS(
     //        credentials: env.PIPELINE_USER_CREDENTIAL_ID,
