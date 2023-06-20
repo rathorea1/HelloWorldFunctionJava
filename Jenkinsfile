@@ -74,13 +74,13 @@ pipeline {
         sh 'venv/bin/sam build --template ${SAM_TEMPLATE} --use-container'
         withAWS(
             credentials: env.PIPELINE_USER_CREDENTIAL_ID,
-            region: env.TESTING_REGION,
+            region: env.REGION,
             role: env.TESTING_PIPELINE_EXECUTION_ROLE,
             roleSessionName: 'testing-packaging') {
           sh '''
-            venv/bin/sam package \
+            venv/bin/sam package --config-env qa \
               --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
-              --region ${TESTING_REGION} \
+              --region ${REGION} \
               --output-template-file packaged-testing.yaml
           '''
         }
@@ -111,14 +111,14 @@ pipeline {
       steps {
         withAWS(
             credentials: env.PIPELINE_USER_CREDENTIAL_ID,
-            region: env.TESTING_REGION,
+            region: env.REGION,
             role: env.TESTING_PIPELINE_EXECUTION_ROLE,
             roleSessionName: 'testing-deployment') {
           sh '''
-            venv/bin/sam deploy --stack-name ${TESTING_STACK_NAME} \
+            venv/bin/sam deploy --config-env qa --stack-name ${STACK_NAME} \
               --template packaged-testing.yaml \
               --capabilities CAPABILITY_IAM \
-              --region ${TESTING_REGION} \
+              --region ${REGION} \
               --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
               --no-fail-on-empty-changeset \
               --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}

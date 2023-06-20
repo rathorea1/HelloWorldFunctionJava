@@ -13,8 +13,15 @@ parallel = true
 [default.validate.parameters]
 lint = true
 
-[default.deploy.parameters]
+[qa.deploy.parameters]
 capabilities = "CAPABILITY_IAM"
+STACK_NAME = "sam-test"
+REGION = 'us-east-1'
+
+[prod.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+STACK_NAME = 'sam-app'
+REGION = 'us-east-2'
 
 [default.package.parameters]
 
