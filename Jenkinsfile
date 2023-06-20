@@ -72,7 +72,7 @@ pipeline {
             role: env.TESTING_PIPELINE_EXECUTION_ROLE,
             roleSessionName: 'testing-packaging') {
           sh '''
-            venv/bin/sam package --config-env qa \
+            venv/bin/sam package \
               --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
               --region ${TESTING_REGION} \
               --output-template-file packaged-testing.yaml
