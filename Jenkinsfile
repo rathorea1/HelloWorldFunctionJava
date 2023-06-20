@@ -98,34 +98,34 @@ pipeline {
      //     '''
      //   }
 
-     //   archiveArtifacts artifacts: 'packaged-testing.yaml'
+        archiveArtifacts artifacts: 'packaged-testing.yaml'
      //   archiveArtifacts artifacts: 'packaged-prod.yaml'
       }
     }
 
-  //  stage('deploy-testing') {
-   //   when {
-   //     branch env.MAIN_BRANCH
-   //   }
+    stage('deploy-testing') {
+      when {
+        branch env.MAIN_BRANCH
+      }
 
-   //   steps {
-   //     withAWS(
-   //         credentials: env.PIPELINE_USER_CREDENTIAL_ID,
-    //        region: env.TESTING_REGION,
-    //        role: env.TESTING_PIPELINE_EXECUTION_ROLE,
-    //        roleSessionName: 'testing-deployment') {
-    //      sh '''
-    //        venv/bin/sam deploy --stack-name ${TESTING_STACK_NAME} \
-    //          --template packaged-testing.yaml \
-    //          --capabilities CAPABILITY_IAM \
-     //         --region ${TESTING_REGION} \
-     //         --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
-    //          --no-fail-on-empty-changeset \
-     //         --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
-     //     '''
-     //   }
-     // }
-    //}
+      steps {
+        withAWS(
+            credentials: env.PIPELINE_USER_CREDENTIAL_ID,
+            region: env.TESTING_REGION,
+            role: env.TESTING_PIPELINE_EXECUTION_ROLE,
+            roleSessionName: 'testing-deployment') {
+          sh '''
+            venv/bin/sam deploy --stack-name ${TESTING_STACK_NAME} \
+              --template packaged-testing.yaml \
+              --capabilities CAPABILITY_IAM \
+              --region ${TESTING_REGION} \
+              --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
+              --no-fail-on-empty-changeset \
+              --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
+          '''
+        }
+      }
+    }
 
     // uncomment and modify the following step for running the integration-tests
     // stage('integration-test') {
