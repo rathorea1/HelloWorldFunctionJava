@@ -40,30 +40,30 @@ pipeline {
     //    }
     //}
 
-    stage('build-and-deploy-feature') {
+  //  stage('build-and-deploy-feature') {
       // this stage is triggered only for feature branches (feature*),
       // which will build the stack and deploy to a stack named with branch name.
-      when {
-        branch 'feature*'
-      }
+ //     when {
+   //     branch 'feature*'
+   //   }
 
-      steps {
-        sh 'venv/bin/sam build --template ${SAM_TEMPLATE} --use-container'
-        withAWS(
-            credentials: env.PIPELINE_USER_CREDENTIAL_ID,
-            region: env.TESTING_REGION,
-            role: env.TESTING_PIPELINE_EXECUTION_ROLE,
-            roleSessionName: 'deploying-feature') {
-          sh '''
-            venv/bin/sam deploy --stack-name $(echo ${BRANCH_NAME} | tr -cd '[a-zA-Z0-9-]') \
-              --capabilities CAPABILITY_IAM \
-              --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
-              --no-fail-on-empty-changeset \
-              --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
-          '''
-        }
-      }
-    }
+   //   steps {
+    //    sh 'venv/bin/sam build --template ${SAM_TEMPLATE} --use-container'
+    //    withAWS(
+     //       credentials: env.PIPELINE_USER_CREDENTIAL_ID,
+    //        region: env.TESTING_REGION,
+     //       role: env.TESTING_PIPELINE_EXECUTION_ROLE,
+    //        roleSessionName: 'deploying-feature') {
+     //     sh '''
+      //      venv/bin/sam deploy --stack-name $(echo ${BRANCH_NAME} | tr -cd '[a-zA-Z0-9-]') \
+      //        --capabilities CAPABILITY_IAM \
+      //        --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
+      //        --no-fail-on-empty-changeset \
+      //        --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
+      //    '''
+      //  }
+     // }
+   // }
 
     stage('build-and-package') {
       when {
@@ -85,47 +85,47 @@ pipeline {
           '''
         }
 
-        withAWS(
-            credentials: env.PIPELINE_USER_CREDENTIAL_ID,
-            region: env.PROD_REGION,
-            role: env.PROD_PIPELINE_EXECUTION_ROLE,
-            roleSessionName: 'prod-packaging') {
-          sh '''
-            venv/bin/sam package \
-              --s3-bucket ${PROD_ARTIFACTS_BUCKET} \
-              --region ${PROD_REGION} \
-              --output-template-file packaged-prod.yaml
-          '''
-        }
+    //    withAWS(
+    //        credentials: env.PIPELINE_USER_CREDENTIAL_ID,
+    //        region: env.PROD_REGION,
+    //        role: env.PROD_PIPELINE_EXECUTION_ROLE,
+     //       roleSessionName: 'prod-packaging') {
+     //     sh '''
+     //       venv/bin/sam package \
+     //         --s3-bucket ${PROD_ARTIFACTS_BUCKET} \
+     //         --region ${PROD_REGION} \
+     //         --output-template-file packaged-prod.yaml
+     //     '''
+     //   }
 
-        archiveArtifacts artifacts: 'packaged-testing.yaml'
-        archiveArtifacts artifacts: 'packaged-prod.yaml'
-      }
+     //   archiveArtifacts artifacts: 'packaged-testing.yaml'
+     //   archiveArtifacts artifacts: 'packaged-prod.yaml'
+     // }
     }
 
-    stage('deploy-testing') {
-      when {
-        branch env.MAIN_BRANCH
-      }
+  //  stage('deploy-testing') {
+   //   when {
+   //     branch env.MAIN_BRANCH
+   //   }
 
-      steps {
-        withAWS(
-            credentials: env.PIPELINE_USER_CREDENTIAL_ID,
-            region: env.TESTING_REGION,
-            role: env.TESTING_PIPELINE_EXECUTION_ROLE,
-            roleSessionName: 'testing-deployment') {
-          sh '''
-            venv/bin/sam deploy --stack-name ${TESTING_STACK_NAME} \
-              --template packaged-testing.yaml \
-              --capabilities CAPABILITY_IAM \
-              --region ${TESTING_REGION} \
-              --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
-              --no-fail-on-empty-changeset \
-              --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
-          '''
-        }
-      }
-    }
+   //   steps {
+   //     withAWS(
+   //         credentials: env.PIPELINE_USER_CREDENTIAL_ID,
+    //        region: env.TESTING_REGION,
+    //        role: env.TESTING_PIPELINE_EXECUTION_ROLE,
+    //        roleSessionName: 'testing-deployment') {
+    //      sh '''
+    //        venv/bin/sam deploy --stack-name ${TESTING_STACK_NAME} \
+    //          --template packaged-testing.yaml \
+    //          --capabilities CAPABILITY_IAM \
+     //         --region ${TESTING_REGION} \
+     //         --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
+    //          --no-fail-on-empty-changeset \
+     //         --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
+     //     '''
+     //   }
+     // }
+    //}
 
     // uncomment and modify the following step for running the integration-tests
     // stage('integration-test') {
@@ -139,31 +139,31 @@ pipeline {
     //   }
     // }
 
-    stage('deploy-prod') {
-      when {
-        branch env.MAIN_BRANCH
-      }
+   // stage('deploy-prod') {
+   //   when {
+    //    branch env.MAIN_BRANCH
+    //  }
 
-      steps {
+    //  steps {
         // uncomment this to have a manual approval step before deployment to production
         // timeout(time: 24, unit: 'HOURS') {
         //   input 'Please confirm before starting production deployment'
         // }
-        withAWS(
-            credentials: env.PIPELINE_USER_CREDENTIAL_ID,
-            region: env.PROD_REGION,
-            role: env.PROD_PIPELINE_EXECUTION_ROLE,
-            roleSessionName: 'prod-deployment') {
-          sh '''
-            venv/bin/sam deploy --stack-name ${PROD_STACK_NAME} \
-              --template packaged-prod.yaml \
-              --capabilities CAPABILITY_IAM \
-              --region ${PROD_REGION} \
-              --s3-bucket ${PROD_ARTIFACTS_BUCKET} \
-              --no-fail-on-empty-changeset \
-              --role-arn ${PROD_CLOUDFORMATION_EXECUTION_ROLE}
-          '''
-        }
+      //  withAWS(
+      //      credentials: env.PIPELINE_USER_CREDENTIAL_ID,
+      //      region: env.PROD_REGION,
+      //      role: env.PROD_PIPELINE_EXECUTION_ROLE,
+      //      roleSessionName: 'prod-deployment') {
+      //    sh '''
+       //     venv/bin/sam deploy --stack-name ${PROD_STACK_NAME} \
+      //        --template packaged-prod.yaml \
+      //        --capabilities CAPABILITY_IAM \
+       //       --region ${PROD_REGION} \
+       //       --s3-bucket ${PROD_ARTIFACTS_BUCKET} \
+       //       --no-fail-on-empty-changeset \
+       //       --role-arn ${PROD_CLOUDFORMATION_EXECUTION_ROLE}
+       //   '''
+       // }
       }
     }
   }
