@@ -57,7 +57,6 @@ pipeline {
           sh '''
             venv/bin/sam deploy --stack-name $(echo ${BRANCH_NAME} | tr -cd '[a-zA-Z0-9-]') \
               --capabilities CAPABILITY_IAM \
-              --region ${TESTING_REGION} \
               --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
               --no-fail-on-empty-changeset \
               --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
