@@ -33,6 +33,17 @@ pipeline {
     //   }
     // }
 
+    stage('Prepare Build Environment') {
+        steps {
+            sh """
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install aws-sam-cli
+            """
+            env.PATH = "${env.WORKSPACE}/venv/bin:${env.WORKSPACE}/bin:${env.PATH}"
+        }
+    }
+
     stage('build-and-deploy-feature') {
       // this stage is triggered only for feature branches (feature*),
       // which will build the stack and deploy to a stack named with branch name.
