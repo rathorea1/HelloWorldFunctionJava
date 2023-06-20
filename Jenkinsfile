@@ -3,7 +3,7 @@ pipeline {
   environment {
     PIPELINE_USER_CREDENTIAL_ID = 'aws-access'
     SAM_TEMPLATE = '.'
-    MAIN_BRANCH = 'master'
+    MAIN_BRANCH = 'main'
     TESTING_STACK_NAME = 'sam-test'
     TESTING_PIPELINE_EXECUTION_ROLE = 'arn:aws:iam::829511097656:role/aws-sam-cli-managed-dev-pipe-PipelineExecutionRole-VVBDUN8394WS'
     TESTING_CLOUDFORMATION_EXECUTION_ROLE = 'arn:aws:iam::829511097656:role/aws-sam-cli-managed-dev-p-CloudFormationExecutionR-11BUCQAOUDWPE'
@@ -39,15 +39,7 @@ pipeline {
       when {
         branch 'feature*'
       }
-      agent {
-        docker {
-          // If you only use a single runtime, replace with a proper image from 
-          // https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html
-          // And remove --use-container option in sam build command below
-          image 'public.ecr.aws/sam/build-provided'
-          args '--user 0:0 -v /var/run/docker.sock:/var/run/docker.sock'
-        }
-      }
+
       steps {
         sh 'sam build --template ${SAM_TEMPLATE} --use-container'
         withAWS(
@@ -71,15 +63,7 @@ pipeline {
       when {
         branch env.MAIN_BRANCH
       }
-      agent {
-        docker {
-          // If you only use a single runtime, replace with a proper image from 
-          // https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html
-          // And remove --use-container option in sam build command below
-          image 'public.ecr.aws/sam/build-provided'
-          args '--user 0:0 -v /var/run/docker.sock:/var/run/docker.sock'
-        }
-      }
+
       steps {
         sh 'sam build --template ${SAM_TEMPLATE} --use-container'
         withAWS(
@@ -117,13 +101,7 @@ pipeline {
       when {
         branch env.MAIN_BRANCH
       }
-      agent {
-        docker {
-          // If you only use a single runtime, replace with a proper image from 
-          // https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html
-          image 'public.ecr.aws/sam/build-provided'
-        }
-      }
+
       steps {
         withAWS(
             credentials: env.PIPELINE_USER_CREDENTIAL_ID,
@@ -159,13 +137,7 @@ pipeline {
       when {
         branch env.MAIN_BRANCH
       }
-      agent {
-        docker {
-          // If you only use a single runtime, replace with a proper image from 
-          // https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html
-          image 'public.ecr.aws/sam/build-provided'
-        }
-      }
+
       steps {
         // uncomment this to have a manual approval step before deployment to production
         // timeout(time: 24, unit: 'HOURS') {
