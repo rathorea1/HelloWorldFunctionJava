@@ -100,7 +100,7 @@ pipeline {
 
      //   archiveArtifacts artifacts: 'packaged-testing.yaml'
      //   archiveArtifacts artifacts: 'packaged-prod.yaml'
-     // }
+      }
     }
 
   //  stage('deploy-testing') {
