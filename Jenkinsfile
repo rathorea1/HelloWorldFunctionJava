@@ -4,23 +4,17 @@ pipeline {
     PIPELINE_USER_CREDENTIAL_ID = 'aws-access'
     SAM_TEMPLATE = 'template.yaml'
     MAIN_BRANCH = 'main'
+
     TESTING_STACK_NAME = 'sam-test'
     TESTING_PIPELINE_EXECUTION_ROLE = 'arn:aws:iam::829511097656:role/aws-sam-cli-managed-dev-pipe-PipelineExecutionRole-VVBDUN8394WS'
     TESTING_CLOUDFORMATION_EXECUTION_ROLE = 'arn:aws:iam::829511097656:role/aws-sam-cli-managed-dev-p-CloudFormationExecutionR-11BUCQAOUDWPE'
     TESTING_ARTIFACTS_BUCKET = 'aws-sam-cli-managed-dev-pipeline-artifactsbucket-1s2rvs8an8zzj'
-    // If there are functions with "Image" PackageType in your template,
-    // uncomment the line below and add "--image-repository ${TESTING_IMAGE_REPOSITORY}" to
-    // testing "sam package" and "sam deploy" commands.
-    // TESTING_IMAGE_REPOSITORY = '0123456789.dkr.ecr.region.amazonaws.com/repository-name'
     TESTING_REGION = 'us-east-1'
+
     PROD_STACK_NAME = 'sam-app'
     PROD_PIPELINE_EXECUTION_ROLE = 'arn:aws:iam::829511097656:role/aws-sam-cli-managed-dev-pipe-PipelineExecutionRole-VVBDUN8394WS'
     PROD_CLOUDFORMATION_EXECUTION_ROLE = 'arn:aws:iam::829511097656:role/aws-sam-cli-managed-dev-p-CloudFormationExecutionR-11BUCQAOUDWPE'
     PROD_ARTIFACTS_BUCKET = 'aws-sam-cli-managed-dev-pipeline-artifactsbucket-1s2rvs8an8zzj'
-    // If there are functions with "Image" PackageType in your template,
-    // uncomment the line below and add "--image-repository ${PROD_IMAGE_REPOSITORY}" to
-    // prod "sam package" and "sam deploy" commands.
-    // PROD_IMAGE_REPOSITORY = '0123456789.dkr.ecr.region.amazonaws.com/repository-name'
     PROD_REGION = 'us-east-1'
   }
   stages {
@@ -74,13 +68,13 @@ pipeline {
         sh 'venv/bin/sam build --template ${SAM_TEMPLATE} --use-container'
         withAWS(
             credentials: env.PIPELINE_USER_CREDENTIAL_ID,
-            region: env.REGION,
+            region: env.TESTING_REGION,
             role: env.TESTING_PIPELINE_EXECUTION_ROLE,
             roleSessionName: 'testing-packaging') {
           sh '''
             venv/bin/sam package --config-env qa \
               --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
-              --region ${REGION} \
+              --region ${TESTING_REGION} \
               --output-template-file packaged-testing.yaml
           '''
         }
@@ -111,14 +105,14 @@ pipeline {
       steps {
         withAWS(
             credentials: env.PIPELINE_USER_CREDENTIAL_ID,
-            region: env.REGION,
+            region: env.TESTING_REGION,
             role: env.TESTING_PIPELINE_EXECUTION_ROLE,
             roleSessionName: 'testing-deployment') {
           sh '''
-            venv/bin/sam deploy --config-env qa --stack-name ${STACK_NAME} \
+            venv/bin/sam deploy --stack-name ${TESTING_STACK_NAME} \
               --template packaged-testing.yaml \
               --capabilities CAPABILITY_IAM \
-              --region ${REGION} \
+              --region ${TESTING_REGION} \
               --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
               --no-fail-on-empty-changeset \
               --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
