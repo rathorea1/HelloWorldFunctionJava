@@ -39,12 +39,6 @@ pipeline {
     //            stash includes: '**/venv/**/*', name: 'venv'
     //    }
     //}
-    stage('Build') {
-          steps {
-            sh 'venv/bin/sam build'
-            stash includes: '**/.aws-sam/**/*', name: 'aws-sam'
-          }
-        }
 
     stage('build-and-deploy-feature') {
       // this stage is triggered only for feature branches (feature*),
@@ -54,14 +48,14 @@ pipeline {
       }
 
       steps {
-        sh 'sam build --template ${SAM_TEMPLATE} --use-container'
+        sh 'venv/bin/sam build --template ${SAM_TEMPLATE} --use-container'
         withAWS(
             credentials: env.PIPELINE_USER_CREDENTIAL_ID,
             region: env.TESTING_REGION,
             role: env.TESTING_PIPELINE_EXECUTION_ROLE,
             roleSessionName: 'deploying-feature') {
           sh '''
-            sam deploy --stack-name $(echo ${BRANCH_NAME} | tr -cd '[a-zA-Z0-9-]') \
+            venv/bin/sam deploy --stack-name $(echo ${BRANCH_NAME} | tr -cd '[a-zA-Z0-9-]') \
               --capabilities CAPABILITY_IAM \
               --region ${TESTING_REGION} \
               --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
@@ -78,14 +72,14 @@ pipeline {
       }
 
       steps {
-        sh 'sam build --template ${SAM_TEMPLATE} --use-container'
+        sh 'venv/bin/sam build --template ${SAM_TEMPLATE} --use-container'
         withAWS(
             credentials: env.PIPELINE_USER_CREDENTIAL_ID,
             region: env.TESTING_REGION,
             role: env.TESTING_PIPELINE_EXECUTION_ROLE,
             roleSessionName: 'testing-packaging') {
           sh '''
-            sam package \
+            venv/bin/sam package \
               --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
               --region ${TESTING_REGION} \
               --output-template-file packaged-testing.yaml
@@ -98,7 +92,7 @@ pipeline {
             role: env.PROD_PIPELINE_EXECUTION_ROLE,
             roleSessionName: 'prod-packaging') {
           sh '''
-            sam package \
+            venv/bin/sam package \
               --s3-bucket ${PROD_ARTIFACTS_BUCKET} \
               --region ${PROD_REGION} \
               --output-template-file packaged-prod.yaml
@@ -122,7 +116,7 @@ pipeline {
             role: env.TESTING_PIPELINE_EXECUTION_ROLE,
             roleSessionName: 'testing-deployment') {
           sh '''
-            sam deploy --stack-name ${TESTING_STACK_NAME} \
+            venv/bin/sam deploy --stack-name ${TESTING_STACK_NAME} \
               --template packaged-testing.yaml \
               --capabilities CAPABILITY_IAM \
               --region ${TESTING_REGION} \
@@ -162,7 +156,7 @@ pipeline {
             role: env.PROD_PIPELINE_EXECUTION_ROLE,
             roleSessionName: 'prod-deployment') {
           sh '''
-            sam deploy --stack-name ${PROD_STACK_NAME} \
+            venv/bin/sam deploy --stack-name ${PROD_STACK_NAME} \
               --template packaged-prod.yaml \
               --capabilities CAPABILITY_IAM \
               --region ${PROD_REGION} \
