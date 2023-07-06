@@ -6,9 +6,9 @@ pipeline {
     MAIN_BRANCH = 'main'
 
     TESTING_STACK_NAME = 'sam-test'
-    TESTING_PIPELINE_EXECUTION_ROLE = 'arn:aws:iam::829511097656:role/aws-sam-cli-managed-dev-pipe-PipelineExecutionRole-VVBDUN8394WS'
-    TESTING_CLOUDFORMATION_EXECUTION_ROLE = 'arn:aws:iam::829511097656:role/aws-sam-cli-managed-dev-p-CloudFormationExecutionR-11BUCQAOUDWPE'
-    TESTING_ARTIFACTS_BUCKET = 'aws-sam-cli-managed-dev-pipeline-artifactsbucket-1s2rvs8an8zzj'
+    TESTING_PIPELINE_EXECUTION_ROLE = 'arn:aws:iam::829511097656:role/aws-sam-cli-managed-dev-pipe-PipelineExecutionRole-103ANNHA2LWR6'
+    TESTING_CLOUDFORMATION_EXECUTION_ROLE = 'arn:aws:iam::829511097656:role/aws-sam-cli-managed-dev-p-CloudFormationExecutionR-1683HLA8D6MF'
+    TESTING_ARTIFACTS_BUCKET = 'aws-sam-cli-managed-dev-pipeline-artifactsbucket-5izcijgzjrnv'
     TESTING_REGION = 'us-east-1'
 
     PROD_STACK_NAME = 'sam-app'
